@@ -113,7 +113,7 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
               id="roomId"
               placeholder="e.g., ABC123XY"
               value={roomId}
-              onChange={handleRoomIdChange}
+              onChange={handleRoomIdChange} 
               className="h-11 font-mono text-center text-lg text-midnight tracking-wider"
               maxLength={8}
             />

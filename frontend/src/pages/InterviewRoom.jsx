@@ -114,7 +114,7 @@ const InterviewRoom = () => {
 
   const handleRunCode = async () => {
     if (!code.trim()) {
-      toast({ title: "Code is empty!", description: "Please write some code to execute." });
+      toast({ title: "Code is empty!", description :  "Please write some code to execute." });
       return;
     }
 

@@ -62,7 +62,7 @@ const CreateRoomModal = ({ open, onOpenChange }) => {
     });
   };
 
-  const handleCreateRoom = async () => {
+  const handleCreateRoom = async () =>  {
     if (!creatorName.trim()) {
       toast({
         title: "Please enter your name",

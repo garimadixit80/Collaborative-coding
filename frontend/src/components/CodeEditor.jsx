@@ -123,7 +123,7 @@ const CodeEditor = ({ language, code, setCode }) => {
         </div>
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-1">
-            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full "></div>
             <span>{participants.length} collaborators</span>
           </div>
         </div>
