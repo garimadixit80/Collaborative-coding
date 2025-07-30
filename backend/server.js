@@ -22,8 +22,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://codesync0.netlify.app",
-    credentials: true,
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -35,7 +34,14 @@ mongoose
   .catch((err) => console.error("❌ MongoDB error:", err));
 
 // 🛠️ Middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://codesync0.netlify.app",
+    credentials: true,
+    methods: ["GET", "POST"],
+  })
+);
+
 app.use(express.json());
 
 // 🧠 In-memory Stores
@@ -43,6 +49,11 @@ const roomCodeStore = new Map();  // For code syncing
 const participants = {};          // socket.id -> { name, roomId, socketId }
 
 // 📦 API Routes
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running successfully.");
+});
+
+
 app.use("/api/code", codeRoutes);
 app.use("/api/interview", interviewRoutes);
 app.use("/api/rooms", roomRoutes);
