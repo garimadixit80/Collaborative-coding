@@ -41,7 +41,7 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
 
     try {
       // ✅ Check if room exists
-      const res = await axios.get(`http://localhost:5000/api/rooms/${roomId.toUpperCase()}`);
+      const res = await axios.get(`https://collaborative-coding-otz5.onrender.com/api/rooms/${roomId.toUpperCase()}`);
       const roomData = res.data;
 
       if (!roomData || !roomData._id) {

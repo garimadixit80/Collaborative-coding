@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import io from 'socket.io-client';
 import { useSearchParams } from 'react-router-dom';
 
-const socket = io('http://localhost:5000'); // Adjust for production
+const socket = io('https://collaborative-coding-otz5.onrender.com');
 
 const ParticipantsList = () => {
   const [participants, setParticipants] = useState([]);

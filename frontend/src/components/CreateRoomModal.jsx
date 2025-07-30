@@ -73,7 +73,7 @@ const CreateRoomModal = ({ open, onOpenChange }) => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/rooms/create", {
+      await axios.post("https://collaborative-coding-otz5.onrender.com/api/rooms/create", {
         roomId,
         roomName,
         language,

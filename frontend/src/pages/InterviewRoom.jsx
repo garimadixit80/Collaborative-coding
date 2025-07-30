@@ -122,7 +122,7 @@ const InterviewRoom = () => {
     setCodeOutput('// Running code...');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/judge', {
+      const res = await axios.post('https://collaborative-coding-otz5.onrender.com/api/judge', {
         sourceCode: code,
         language,
         stdin: '',
