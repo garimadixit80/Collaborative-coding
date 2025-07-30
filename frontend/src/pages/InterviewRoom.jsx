@@ -16,7 +16,7 @@ import ParticipantsList from '@/components/ParticipantsList';
 import { toast } from '@/hooks/use-toast';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://collaborative-coding-otz5.onrender.com');
 
 const InterviewRoom = () => {
   const { roomId } = useParams();
@@ -37,7 +37,7 @@ const InterviewRoom = () => {
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/rooms/${roomId}`);
+        const res = await axios.get(`https://collaborative-coding-otz5.onrender.com/api/rooms/${roomId}`);
         const room = res.data;
         if (room) {
           setRoomName(room.roomName || 'Unnamed Interview');
@@ -90,7 +90,7 @@ const InterviewRoom = () => {
   useEffect(() => {
     const loadFeedback = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/notes/${roomId}`);
+        const res = await axios.get(`https://collaborative-coding-otz5.onrender.com/api/notes/${roomId}`);
         if (res.data?.feedback) {
           setFeedback(res.data.feedback);
         }
@@ -146,7 +146,7 @@ const InterviewRoom = () => {
   // ✅ Save feedback to backend
   const saveFeedback = async () => {
     try {
-      await axios.post(`http://localhost:5000/api/notes/save`, {
+      await axios.post(`https://collaborative-coding-otz5.onrender.com/api/notes/save`, {
         roomId,
         feedback,
       });

@@ -56,7 +56,7 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
       const finalLanguage = roomData.language || 'javascript';
 
       // ✅ Send participant's actual name to backend
-      await axios.post("http://localhost:5000/api/participant/join", {
+      await axios.post("https://collaborative-coding-otz5.onrender.com/api/participant/join", {
         roomId: roomId.toUpperCase(),
         name: participantName.trim(), // ensures name is passed
         language: finalLanguage,
