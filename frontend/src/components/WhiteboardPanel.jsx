@@ -1,11 +1,16 @@
-import { useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Pen, Eraser, Square, Circle, Type, Trash2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
 const WhiteboardPanel = () => {
   const [selectedTool, setSelectedTool] = useState('pen');
+  const [selectedColor, setSelectedColor] = useState('#000000');
   const [isDrawing, setIsDrawing] = useState(false);
+  const [brushSize, setBrushSize] = useState(2);
+
+  const canvasRef = useRef(null);
+  const ctxRef = useRef(null);
 
   const tools = [
     { id: 'pen', icon: Pen, label: 'Pen' },
@@ -15,10 +20,58 @@ const WhiteboardPanel = () => {
     { id: 'text', icon: Type, label: 'Text' },
   ];
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctxRef.current = ctx;
+  }, []);
+
+  const startDrawing = (e) => {
+    setIsDrawing(true);
+    const ctx = ctxRef.current;
+    ctx.beginPath();
+    ctx.moveTo(getX(e), getY(e));
+  };
+
+  const draw = (e) => {
+    if (!isDrawing) return;
+    const ctx = ctxRef.current;
+    ctx.strokeStyle = selectedTool === 'eraser' ? '#ffffff' : selectedColor;
+    ctx.lineWidth = brushSize;
+    ctx.lineTo(getX(e), getY(e));
+    ctx.stroke();
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    ctxRef.current.closePath();
+  };
+
+  const getX = (e) => e.nativeEvent.offsetX;
+  const getY = (e) => e.nativeEvent.offsetY;
+
+  const handleClear = () => {
+    const canvas = canvasRef.current;
+    const ctx = ctxRef.current;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const handleDownload = () => {
+    const canvas = canvasRef.current;
+    const link = document.createElement('a');
+    link.download = 'whiteboard.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+
   return (
     <div className="h-full flex flex-col">
-      {/* Whiteboard Toolbar */}
-      <div className="border-b border-gray-200 p-3 bg-gray-50">
+      {/* Toolbar */}
+      <div className="border-b border-midnight p-3 bg-lavender">
         <div className="flex items-center space-x-2 mb-3">
           {tools.map((tool) => (
             <Button
@@ -38,12 +91,20 @@ const WhiteboardPanel = () => {
             <div className="flex items-center space-x-1">
               <span className="text-xs text-gray-600">Color:</span>
               <div className="flex space-x-1">
-                {['bg-black', 'bg-red-500', 'bg-blue-500', 'bg-green-500'].map((color) => (
+                {[
+                  { name: 'Black', value: '#000000' },
+                  { name: 'Red', value: '#ef4444' },
+                  { name: 'Blue', value: '#3b82f6' },
+                  { name: 'Green', value: '#22c55e' },
+                ].map((colorObj) => (
                   <button
-                    key={color}
-                    className={`w-5 h-5 rounded-full border-2 ${color} ${
-                      color === 'bg-black' ? 'border-gray-400' : 'border-gray-300'
-                    }`}
+                    key={colorObj.value}
+                    onClick={() => setSelectedColor(colorObj.value)}
+                    className={`w-5 h-5 rounded-full border-2`}
+                    style={{
+                      backgroundColor: colorObj.value,
+                      borderColor: selectedColor === colorObj.value ? '#333' : '#ccc',
+                    }}
                   />
                 ))}
               </div>
@@ -51,79 +112,31 @@ const WhiteboardPanel = () => {
           </div>
 
           <div className="flex items-center space-x-1">
-            <Button size="sm" variant="ghost">
+            <Button size="sm" variant="ghost" onClick={handleClear}>
               <Trash2 className="h-4 w-4" />
             </Button>
-            <Button size="sm" variant="ghost">
+            <Button size="sm" variant="ghost" onClick={handleDownload}>
               <Download className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Whiteboard Canvas */}
+      {/* Canvas Area */}
       <div className="flex-1 relative bg-white">
         <canvas
+          ref={canvasRef}
           className="w-full h-full cursor-crosshair"
-          onMouseDown={() => setIsDrawing(true)}
-          onMouseUp={() => setIsDrawing(false)}
-          onMouseLeave={() => setIsDrawing(false)}
+          onMouseDown={startDrawing}
+          onMouseMove={draw}
+          onMouseUp={stopDrawing}
+          onMouseLeave={stopDrawing}
         />
 
-        {/* Placeholder content */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="text-gray-400 text-center">
-            <div className="text-4xl mb-4">📝</div>
-            <p className="text-sm">Start drawing or writing</p>
-            <p className="text-xs text-gray-300 mt-1">Collaborate visually with your interview partner</p>
-          </div>
-        </div>
-
-        {/* Sample drawings for demo */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          <circle
-            cx="100"
-            cy="80"
-            r="30"
-            fill="none"
-            stroke="#3b82f6"
-            strokeWidth="2"
-            strokeDasharray="5,5"
-            opacity="0.3"
-          />
-          <rect
-            x="150"
-            y="60"
-            width="80"
-            height="40"
-            fill="none"
-            stroke="#ef4444"
-            strokeWidth="2"
-            strokeDasharray="5,5"
-            opacity="0.3"
-          />
-          <text
-            x="50"
-            y="150"
-            fontSize="14"
-            fill="#10b981"
-            opacity="0.4"
-          >
-            Algorithm steps:
-          </text>
-        </svg>
+        
       </div>
 
-      {/* Collaboration Status */}
-      <div className="border-t border-gray-200 px-3 py-2 bg-gray-50">
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>Real-time collaboration active</span>
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-            <span>2 users drawing</span>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 };

@@ -18,6 +18,7 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
   const navigate = useNavigate();
   const [roomId, setRoomId] = useState('');
   const [participantName, setParticipantName] = useState('');
+  const [language, setLanguage] = useState('javascript'); // still unused
 
   const handleJoinRoom = async () => {
     if (!roomId.trim()) {
@@ -39,10 +40,26 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
     }
 
     try {
-      // Send join data to backend
+      // ✅ Check if room exists
+      const res = await axios.get(`http://localhost:5000/api/rooms/${roomId.toUpperCase()}`);
+      const roomData = res.data;
+
+      if (!roomData || !roomData._id) {
+        toast({
+          title: "Room Not Found",
+          description: `Room ${roomId.toUpperCase()} does not exist.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const finalLanguage = roomData.language || 'javascript';
+
+      // ✅ Send participant's actual name to backend
       await axios.post("http://localhost:5000/api/participant/join", {
         roomId: roomId.toUpperCase(),
-        name: participantName.trim(),
+        name: participantName.trim(), // ensures name is passed
+        language: finalLanguage,
       });
 
       toast({
@@ -51,14 +68,20 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
       });
 
       onOpenChange(false);
+
       navigate(
-        `/interview/${roomId.toUpperCase()}?participant=${encodeURIComponent(participantName)}`
+        `/interview/${roomId.toUpperCase()}?name=${encodeURIComponent(participantName)}&language=${finalLanguage}`
       );
     } catch (error) {
-      console.error("Error joining room:", error);
+      console.error("Join room error:", error);
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Unexpected error occurred. Please try again.";
+
       toast({
         title: "Join Failed",
-        description: "Could not join the room. Please try again.",
+        description: message,
         variant: "destructive",
       });
     }
@@ -71,20 +94,19 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px] bg-[hsl(var(--background))]">
+      <DialogContent className="sm:max-w-[450px] bg-lavender">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-900">
-            Join Interview Room
+          <DialogTitle className="text-2xl font-bold text-midnight">
+            Join Room
           </DialogTitle>
-          <DialogDescription className="text-gray-600">
+          <DialogDescription className="text-midnight">
             Enter the room ID provided by your interviewer to join the session.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Room ID Input */}
           <div className="space-y-2">
-            <Label htmlFor="roomId" className="text-sm font-medium">
+            <Label htmlFor="roomId" className="text-sm font-medium text-midnight">
               Room ID
             </Label>
             <Input
@@ -92,17 +114,16 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
               placeholder="e.g., ABC123XY"
               value={roomId}
               onChange={handleRoomIdChange}
-              className="h-11 font-mono text-center text-lg tracking-wider"
+              className="h-11 font-mono text-center text-lg text-midnight tracking-wider"
               maxLength={8}
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-midnight">
               Room ID should be 8 characters long (provided by room creator)
             </p>
           </div>
 
-          {/* Participant Name */}
           <div className="space-y-2">
-            <Label htmlFor="participantName" className="text-sm font-medium">
+            <Label htmlFor="participantName" className=" text-midnight text-sm font-medium">
               Your Name
             </Label>
             <Input
@@ -110,15 +131,13 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
               placeholder="Enter your full name"
               value={participantName}
               onChange={(e) => setParticipantName(e.target.value)}
-              className="h-11"
+              className="h-11 text-midnight"
             />
           </div>
 
-          {/* Quick Info */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-2">Before you join:</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Make sure your microphone and camera are working</li>
+          <div className="bg-white p-4 rounded-lg">
+            <h4 className="font-medium text-midnight mb-2">Before you join:</h4>
+            <ul className="text-sm text-midnight space-y-1">
               <li>• Use a stable internet connection for best experience</li>
               <li>• Close unnecessary applications to improve performance</li>
             </ul>
@@ -126,12 +145,12 @@ const JoinRoomModal = ({ open, onOpenChange }) => {
         </div>
 
         <div className="flex justify-end space-x-3 pt-4 border-t">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button className="bg-white text-midnight"variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button
             onClick={handleJoinRoom}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-midnight hover:bg-darkIndigo"
             disabled={!roomId.trim() || !participantName.trim()}
           >
             <ArrowRight className="mr-2 h-4 w-4" />

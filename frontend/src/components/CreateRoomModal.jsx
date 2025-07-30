@@ -26,6 +26,7 @@ const CreateRoomModal = ({ open, onOpenChange }) => {
   const navigate = useNavigate();
 
   // === State for form inputs ===
+  const [creatorName, setCreatorName] = useState("");
   const [roomName, setRoomName] = useState("");
   const [duration, setDuration] = useState("60");
   const [language, setLanguage] = useState("javascript");
@@ -53,7 +54,6 @@ const CreateRoomModal = ({ open, onOpenChange }) => {
     { value: "120", label: "2 hours" },
   ];
 
-  // === Copy Room ID to clipboard ===
   const copyRoomId = () => {
     navigator.clipboard.writeText(roomId);
     toast({
@@ -62,31 +62,37 @@ const CreateRoomModal = ({ open, onOpenChange }) => {
     });
   };
 
-  // === Create Room ===
   const handleCreateRoom = async () => {
+    if (!creatorName.trim()) {
+      toast({
+        title: "Please enter your name",
+        description: "This will help identify you in the room.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      // 1. Send data to backend
       await axios.post("http://localhost:5000/api/rooms/create", {
         roomId,
         roomName,
         language,
         duration,
+        creatorName,
       });
 
-      // 2. Show success toast
       toast({
         title: "Room Created Successfully!",
         description: `Room ${roomId} is ready for your interview session.`,
       });
 
-      // 3. Close modal
       onOpenChange(false);
 
-      // 4. Navigate to room
+      // ✅ Fixed: changed `creator=` to `creatorName=`
       navigate(
         `/interview/${roomId}?lang=${language}&duration=${duration}&name=${encodeURIComponent(
           roomName
-        )}`
+        )}&creatorName=${encodeURIComponent(creatorName)}`
       );
     } catch (error) {
       console.error("Room creation error:", error);
@@ -97,52 +103,67 @@ const CreateRoomModal = ({ open, onOpenChange }) => {
       });
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-[hsl(var(--background))]">
+      <DialogContent className="sm:max-w-[500px] bg-lavender max-h-[90vh] overflow-y-auto text-midnight">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-900">
-            Create Interview Room
+          <DialogTitle className="text-2xl font-bold text-midnight">
+            Create Room
           </DialogTitle>
-          <DialogDescription className="text-gray-600">
+          <DialogDescription className="text-midnight">
             Set up your technical interview session with custom settings.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
           {/* Room ID Display */}
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <Label className="text-sm font-medium text-blue-800 mb-2 block">
+          <div className="bg-white p-4 rounded-lg border border-blue-200">
+            <Label className="text-sm font-medium text-midnight mb-2 block">
               Room ID
             </Label>
             <div className="flex items-center space-x-2">
-              <code className="bg-white px-3 py-2 rounded border text-lg font-mono text-blue-600 flex-1">
+              <code className="bg-lavender px-3 py-2 rounded border text-lg text-midnight font-mono text-blue-600 flex-1">
                 {roomId}
               </code>
-              <Button size="sm" variant="outline" onClick={copyRoomId}>
-                <Copy className="h-4 w-4" />
+              <Button className="bg-lavender" size="sm" variant="outline" onClick={copyRoomId}>
+                <Copy className="h-4 w-4 hover:text-white" />
               </Button>
             </div>
           </div>
 
+          {/* Creator Name */}
+          <div className="space-y-2">
+            <Label htmlFor="creatorName" className="text-sm font-medium text-midnight">
+              Your Name
+            </Label>
+            <Input
+              id="creatorName"
+              placeholder="e.g., Garima Dixit"
+              value={creatorName}
+              onChange={(e) => setCreatorName(e.target.value)}
+              className="h-11 bg-white"
+            />
+          </div>
+
           {/* Room Name */}
           <div className="space-y-2">
-            <Label htmlFor="roomName" className="text-sm font-medium">
+            <Label htmlFor="roomName" className="text-sm font-medium text-midnight">
               Room Name (Optional)
             </Label>
             <Input
               id="roomName"
-              placeholder="e.g., Frontend Engineer Interview"
+              placeholder="e.g., Creating Room For fun"
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
-              className="h-11"
+              className="h-11 text-midnight"
             />
           </div>
 
           {/* Language Selection */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Programming Language</Label>
-            <Select value={language} onValueChange={setLanguage}>
+            <Label className="text-sm font-medium text-midnight">Programming Language</Label>
+            <Select className="text-midnight" value={language} onValueChange={setLanguage}>
               <SelectTrigger className="h-11">
                 <SelectValue />
               </SelectTrigger>
@@ -158,11 +179,11 @@ const CreateRoomModal = ({ open, onOpenChange }) => {
 
           {/* Duration Selection */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">
+            <Label className="text-sm font-medium text-midnight">
               <Clock className="inline h-4 w-4 mr-1" />
-              Interview Duration
+              Duration
             </Label>
-            <Select value={duration} onValueChange={setDuration}>
+            <Select className="text-midnight" value={duration} onValueChange={setDuration}>
               <SelectTrigger className="h-11">
                 <SelectValue />
               </SelectTrigger>
@@ -177,13 +198,13 @@ const CreateRoomModal = ({ open, onOpenChange }) => {
           </div>
         </div>
 
-        <div className="flex justify-end space-x-3 pt-4 border-t">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <div className="flex justify-end space-x-3 pt-4 border-t sticky bottom-0 bg-lavender z-10">
+          <Button className="text-midnight"variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button
             onClick={handleCreateRoom}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-midnight hover:bg-darkIndigo"
           >
             <Users className="mr-2 h-4 w-4" />
             Create Room

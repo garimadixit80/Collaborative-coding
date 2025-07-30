@@ -6,7 +6,7 @@ module.exports = {
     "./components/**/*.{js,jsx}",
     "./app/**/*.{js,jsx}",
     "./src/**/*.{js,jsx}",
-    "./index.html"
+    "./index.html",
   ],
   theme: {
     container: {
@@ -61,6 +61,17 @@ module.exports = {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // ⬇️ Moved custom colors to top-level //B8A9FF
+        midnight: "#050F2A",
+        lavender: "#cac0fcff",
+        lavender1: "#aa98ffff",
+        deepNavy: "#0c0f1fff",
+        steelBlue: "#00173aff",
+        darkIndigo: "#0D1546",
+        forButton: "#1a2c86ff",
+        lightSteel: "#E8EBFA",
+        skyTint: "#bcd5f3ff",
+        darkSlate: "#072D44", // 💡 Added your color
       },
       borderRadius: {
         lg: "var(--radius)",

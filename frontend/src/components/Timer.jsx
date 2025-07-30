@@ -67,7 +67,7 @@ const Timer = ({ duration }) => {
 
   return (
     <div className="flex items-center gap-3">
-      <div className={`px-4 py-2 rounded-lg border ${getTimeBackground()}`}>
+      <div className={`px-4 py-2 rounded-lg border bg-lightSteel ${getTimeBackground()}`}>
         <div className="flex items-center gap-2">
           <Clock className={`h-4 w-4 ${getTimeColor()}`} aria-hidden="true" />
           <span
@@ -98,7 +98,7 @@ const Timer = ({ duration }) => {
         </Button>
 
         {(isRunning || isCompleted) && (
-          <Button
+          <Button className="bg-lightSteel text-midnight"
             size="sm"
             variant="ghost"
             onClick={stopTimer}
