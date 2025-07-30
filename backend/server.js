@@ -49,6 +49,10 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/participant", participantRoutes(io, participants)); // <--- CHANGE HERE
 app.use("/api/judge", judge);
 app.use("/api/notes", noteRoutes);
+app.get('/api/test', (req, res) => {
+  res.send('API is working!');
+});
+
 
 // ⚡ Socket.IO Setup (No changes needed in this block for the "Guest" issue, it's already correct)
 io.on("connection", (socket) => {
