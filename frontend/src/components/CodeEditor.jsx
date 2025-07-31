@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
-const socket = io('https://collaborative-coding-otz5.onrender.com/');
+const socket = io('https://collaborative-coding-otz5.onrender.com');
 
 const CodeEditor = ({ language, code, setCode }) => {
   const { roomId } = useParams();
